@@ -1,0 +1,137 @@
+7. Design, develop and implement a C/C++/Java program to simulate the working of Shortest remaining time and Round Robin (RR) scheduling algorithms. Experiment with different quantum sizes for RR algorithm.
+#include<stdio.h>
+#include<stdlib.h>
+int bt[10], rbt[10], at[10] = { 0 }, ct[10], wt[10], tat[10];
+int choice, tq, n;
+void roundRobin();
+void srtf();
+void readBT() {
+printf("Enter Burst Time : ");
+for (int i = 0; i < n; i++) {
+scanf("%d", &bt[i]);
+rbt[i] = bt[i];
+}
+}
+void readAT() {
+printf("Enter Arrival Time : ");
+for (int i = 0; i < n; i++)
+scanf("%d", &at[i]);
+}
+void display() {
+int swt = 0, stat = 0;
+for (int i = 0; i < n; i++) {
+tat[i] = ct[i] - at[i];
+wt[i] = tat[i] - bt[i];
+swt += wt[i];
+stat += tat[i];
+}
+printf("PNO\tAT\tBT\tCT\tTAT\tWT\n");
+for (int i = 0; i < n; i++)
+printf("%d\t%d\t%d\t%d\t%d\t%d\n", i, at[i], bt[i], ct[i], tat[i],
+wt[i]);
+printf("Average TAT : %f\n", (float) stat / n);
+printf("Average WT : %f\n", (float) swt / n);
+}
+int main() {
+setbuf(stdout,NULL);
+for (;;) {
+printf("1)RR\n2)SRTF\n3)EXIT\n");
+printf("Enter Choice : ");
+scanf("%d", &choice);
+switch (choice) {
+case 1:
+printf("ROUND ROBIN\n");
+printf("Enter The Number Of Processes : ");
+scanf("%d", &n);
+readBT();
+printf("Enter Time Quantum : ");
+scanf("%d", &tq);
+roundRobin();
+break;
+case 2:
+printf("SRTF\n");
+printf("Enter The Number Of Processes : ");
+scanf("%d", &n);
+readBT();
+readAT();
+srtf();
+break;
+case 3:
+exit(0);
+}
+}
+return 0;
+}
+void roundRobin() {
+int count = 0, i, time = 0;
+while (1) {
+for (i = 0; i < n; i++) {
+if (rbt[i] > tq) {
+rbt[i] -= tq;
+time += tq;
+} else if (rbt[i] != 0) {
+time += rbt[i];
+count++;
+rbt[i] = 0;
+ct[i] = time;
+}
+}
+if (count == n)
+break;
+}
+display();
+}
+void srtf() {
+int count = 0, i, time;
+rbt[9] = 999;
+for (time = 0; count != n; time++) {
+int smallest = 9;
+for (i = 0; i < n; i++) {
+if (at[i] <= time && rbt[i] < rbt[smallest] && rbt[i] > 0)
+smallest = i;
+}
+rbt[smallest]--;
+if (rbt[smallest] == 0) {
+count++;
+ct[smallest] = time + 1;
+}
+}
+display();
+}
+
+OUTPUT
+1)RR
+2)SRTF
+3)EXIT
+Enter Choice : 1
+ROUND ROBIN
+Enter The Number Of Processes : 4
+Enter Burst Time : 4 2 5 2
+Enter Time Quantum : 15
+PNO AT BT CT TAT WT
+0 0 4 4 4 0
+1 0 2 6 6 4
+2 0 5 11 11 6
+3 0 2 13 13 11
+Average TAT : 8.500000
+Average WT : 5.250000
+1)RR
+2)SRTF
+3)EXIT
+Enter Choice : 2
+SRTF
+Enter The Number Of Processes : 5
+Enter Burst Time : 5 4 4 2 4
+Enter Arrival Time : 3 0 5 7 5
+PNO AT BT CT TAT WT
+0 3 5 9 6 1
+1 0 4 4 4 0
+2 5 4 15 10 6
+3 7 2 11 4 2
+4 5 4 19 14 10
+Average TAT : 7.600000
+Average WT : 3.800000
+1)RR
+2)SRTF
+3)EXIT
+Enter Choice : 3
